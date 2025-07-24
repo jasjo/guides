@@ -1,0 +1,62 @@
+<#
+.SYNOPSIS
+    The script creates a SharePoint Online list using PowerShell PnP
+
+.DESCRIPTION
+    This script is to be used along with the created guide to create a Microsoft Message Center SharePoint Online list that can be used for tracking organizational change.
+
+.PARAMETER InputFile
+    The path to the input file.
+
+.PARAMETER OutputFile
+    The path to the output file.
+
+.EXAMPLE
+    .\\MyScript.ps1 -InputFile C:\\input.txt -OutputFile C:\\output.txt
+
+    Runs the script with the specified input and output files.
+#>
+
+# Replace siteUrl, clientId, thumbprint, and tenant with values from your tenant and app registration
+
+$siteUrl = "https://jasjocom.sharepoint.com/sites/Test1"
+$clientId ="2d167401-2514-4ce3-a6bc-b235028c1632"
+$thumbprint = "675E3BC477F78FFBB32F07463135334FAD728328"
+$tenant = "jasjocom.onmicrosoft.com"
+
+Connect-PnPOnline -Url $siteUrl -ClientId $clientId -Thumbprint $thumbprint -Tenant $tenant
+
+# Replace with your list name and custom url
+
+$listName = "MC Test 3"
+$listUrl = "$listName" -replace " ",""
+New-Pnplist -Title $listName -Template GenericList -url $listUrl
+
+# These fields cover the basic output of the Message Center api. Status, Team Assignment, and Notes are optional
+
+Add-PnPField -list $listName -DisplayName "Services" -InternalName "Services" -Type MultiChoice 
+Add-PnPField -list $listName -DisplayName "Category" -InternalName "Category" -Type Choice 
+Add-PnPField -list $listName -DisplayName "Start Time" -InternalName "StartTime" -Type DateTime
+Add-PnPField -list $listName -DisplayName "End Time" -InternalName "EndTime" -Type DateTime
+Add-PnPField -list $listName -DisplayName "Post Title" -InternalName "PostTitle" -type Text
+Add-PnPField -list $listName -DisplayName "Post" -InternalName "Post" -type Note
+Add-PnPField -list $listName -DisplayName "Tags" -InternalName "Tags" -type MultiChoice
+Add-PnPField -list $listName -DisplayName "Severity" -InternalName "Severity" -type Choice
+Add-PnPField -list $listName -DisplayName "Is Major Change" -InternalName "IsMajorChange" -type Boolean
+Add-PnPField -list $listName -DisplayName "Last Modified" -InternalName "LastModifiedDate" -type DateTime
+Add-PnPField -list $listName -DisplayName "Act By Date" -InternalName "ActByDate" -type DateTime
+Add-PnPField -list $listName -DisplayName "Status" -InternalName "Status" -type Choice
+Add-PnPField -list $listName -DisplayName "Team Assignment" -InternalName "TeamAssignment" -type Choice
+Add-PnPField -list $listName -DisplayName "Notes" -InternalName "Notes" -type Note
+
+# Set DateTime field friend format and remove the time component
+Set-PnPField -List $listName -Identity "StartTime" -Values @{DisplayFormat = [Microsoft.SharePoint.Client.DateTimeFieldFormatType]::DateOnly}
+Set-PnPField -List $listName -Identity "StartTime" -Values @{FriendlyDisplayFormat = [Microsoft.SharePoint.Client.DateTimeFieldFriendlyFormatType]::Disabled}
+Set-PnPField -List $listName -Identity "EndTime" -Values @{DisplayFormat = [Microsoft.SharePoint.Client.DateTimeFieldFormatType]::DateOnly}
+Set-PnPField -List $listName -Identity "EndTime" -Values @{FriendlyDisplayFormat = [Microsoft.SharePoint.Client.DateTimeFieldFriendlyFormatType]::Disabled}
+Set-PnPField -List $listName -Identity "LastModifiedDate" -Values @{DisplayFormat = [Microsoft.SharePoint.Client.DateTimeFieldFormatType]::DateOnly}
+Set-PnPField -List $listName -Identity "LastModifiedDate" -Values @{FriendlyDisplayFormat = [Microsoft.SharePoint.Client.DateTimeFieldFriendlyFormatType]::Disabled}
+Set-PnPField -List $listName -Identity "ActByDate" -Values @{DisplayFormat = [Microsoft.SharePoint.Client.DateTimeFieldFormatType]::DateOnly}
+Set-PnPField -List $listName -Identity "ActByDate" -Values @{FriendlyDisplayFormat = [Microsoft.SharePoint.Client.DateTimeFieldFriendlyFormatType]::Disabled}
+
+Disconnect-PnPOnline
