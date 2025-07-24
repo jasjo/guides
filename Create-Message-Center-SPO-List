@@ -4,17 +4,6 @@
 
 .DESCRIPTION
     This script is to be used along with the created guide to create a Microsoft Message Center SharePoint Online list that can be used for tracking organizational change.
-
-.PARAMETER InputFile
-    The path to the input file.
-
-.PARAMETER OutputFile
-    The path to the output file.
-
-.EXAMPLE
-    .\\MyScript.ps1 -InputFile C:\\input.txt -OutputFile C:\\output.txt
-
-    Runs the script with the specified input and output files.
 #>
 
 # Replace siteUrl, clientId, thumbprint, and tenant with values from your tenant and app registration
